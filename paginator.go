@@ -81,7 +81,7 @@ type Items struct {
 }
 
 func CalculatePagination(isFirstPage bool, limit int, items []*Items, isLastPage bool) *Pagination {
-	hasPagination := len(items) > limit
+	hasPagination := len(items)+1 > limit
 	if !hasPagination {
 		num := len(items)
 		if num == 0 {
