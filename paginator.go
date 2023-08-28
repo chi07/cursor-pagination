@@ -81,8 +81,14 @@ type Items struct {
 }
 
 func CalculatePagination(isFirstPage bool, limit int, items []*Items, isLastPage bool) *Pagination {
-	hasPagination := len(items)+1 > limit
-	if !hasPagination {
+	if limit == 0 {
+		return nil
+	}
+	if isFirstPage && isLastPage {
+		return nil
+	}
+
+	if hasPagination := len(items)+1 > limit; !hasPagination {
 		num := len(items)
 		if num == 0 {
 			return nil
@@ -98,18 +104,15 @@ func CalculatePagination(isFirstPage bool, limit int, items []*Items, isLastPage
 		}
 	}
 
-	if limit == 0 {
-		return nil
-	}
-
 	lastItem := items[limit-1]
 	firstItem := items[0]
 	nextCur := NewCursor(lastItem.ID.String(), lastItem.CreatedAt, true)
-	prevCur := NewCursor(firstItem.ID.String(), firstItem.CreatedAt, false)
 
 	if isFirstPage {
 		return generatePager(nextCur, nil)
 	}
+
+	prevCur := NewCursor(firstItem.ID.String(), firstItem.CreatedAt, false)
 
 	return generatePager(nextCur, prevCur)
 }
