@@ -89,19 +89,14 @@ func CalculatePagination(isFirstPage bool, limit int, items []*Items, isLastPage
 	}
 
 	if hasPagination := len(items)+1 > limit; !hasPagination {
+		isLastPage = true
 		num := len(items)
 		if num == 0 {
 			return nil
 		}
 
 		lastItem := items[num-1]
-		firstItem := items[0]
-
-		if isLastPage {
-			return generatePager(nil, NewCursor(lastItem.ID.String(), lastItem.CreatedAt, false))
-		} else if isFirstPage {
-			return generatePager(NewCursor(firstItem.ID.String(), firstItem.CreatedAt, true), nil)
-		}
+		return generatePager(nil, NewCursor(lastItem.ID.String(), lastItem.CreatedAt, false))
 	}
 
 	lastItem := items[limit-1]
