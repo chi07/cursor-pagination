@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Cursor map[string]interface{}
@@ -16,7 +14,7 @@ type Pagination struct {
 	PrevCursor string `json:"prevCursor"`
 }
 
-func NewCursor(id string, createdAt time.Time, pointsNext bool) Cursor {
+func NewCursor(id int64, createdAt time.Time, pointsNext bool) Cursor {
 	return Cursor{
 		"id":         id,
 		"createdAt":  createdAt,
@@ -76,7 +74,7 @@ func GetPaginationOperator(pointsNext bool, sortOrder string) (string, string) {
 }
 
 type Items struct {
-	ID        uuid.UUID `json:"id"`
+	ID        int64     `json:"id"`
 	CreatedAt time.Time `pg:"created_at"`
 }
 
@@ -96,13 +94,13 @@ func CalculatePagination(isFirstPage bool, limit int, items []*Items, isLastPage
 		}
 
 		lastItem := items[num-1]
-		return generatePager(nil, NewCursor(lastItem.ID.String(), lastItem.CreatedAt, false))
+		return generatePager(nil, NewCursor(lastItem.ID, lastItem.CreatedAt, false))
 	}
 
 	lastItem := items[limit-1]
 	firstItem := items[0]
-	nextCur := NewCursor(lastItem.ID.String(), lastItem.CreatedAt, true)
-	prevCur := NewCursor(firstItem.ID.String(), firstItem.CreatedAt, false)
+	nextCur := NewCursor(lastItem.ID, lastItem.CreatedAt, true)
+	prevCur := NewCursor(firstItem.ID, firstItem.CreatedAt, false)
 
 	if isFirstPage {
 		return generatePager(nextCur, nil)
